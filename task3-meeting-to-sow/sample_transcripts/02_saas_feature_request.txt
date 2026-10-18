@@ -1,0 +1,11 @@
+Daniel Osei (Client): Our SaaS tool tracks equipment rentals for small event companies. We need role-based access so managers can see revenue but crew members cannot.
+Ines (Consultant): Is that two roles or more?
+Daniel Osei (Client): Probably three: admin, manager and crew. We must also have an audit log of who changed a booking.
+Daniel Osei (Client): We want an API so customers can pull their bookings into their own accounting software. It should be easy to use.
+Ines (Consultant): Which accounting systems?
+Daniel Osei (Client): Not sure. Possibly Xero and QuickBooks, we'll figure that out with our customers.
+Daniel Osei (Client): We also need a mobile-friendly check-in screen for crew to scan equipment barcodes. It must work offline in warehouses with weak signal.
+Daniel Osei (Client): We would like a customer-facing invoice portal, but that can wait, not for this phase.
+Daniel Osei (Client): We want to send SMS reminders to customers the day before an event.
+Ines (Consultant): Who supplies the SMS provider account?
+Daniel Osei (Client): We'll provide the credentials for our SMS provider. The check-in screen is done when crew can scan 50 items in under 5 minutes.

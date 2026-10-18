@@ -1,0 +1,8 @@
+Marta Klein (Client): Thanks for the draft scope. I have a few changes after talking to my partner.
+Marta Klein (Client): Actually, we now want the map view to show shops within a chosen distance of the visitor's location, with a distance filter.
+Marta Klein (Client): We don't need the email notification when a customer leaves a review anymore, our owners hate more email.
+Marta Klein (Client): We also need online payments so shops can pay for a premium listing by card.
+Marta Klein (Client): We'd like a mobile app too, but later, not for this project.
+Joel (Consultant): Are opening hours still for all shops?
+Marta Klein (Client): Only paying members get the opening hours feature, we decided that.
+Marta Klein (Client): The shop import is unchanged, we still need to import the 400 shops from the spreadsheet.

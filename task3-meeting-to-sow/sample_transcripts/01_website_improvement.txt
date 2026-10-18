@@ -1,0 +1,14 @@
+Marta Klein (Client): Thanks for making time. We run a directory of independent bike repair shops and our website feels dated. We need a cleaner homepage and we want it to be modern and fast.
+Joel (Consultant): Understood. Which parts of the site matter most to you right now?
+Marta Klein (Client): We need a way for shop owners to add their own opening hours and holiday closures. Right now they email us and we edit it by hand.
+Joel (Consultant): Is that for all shops or only paying members?
+Marta Klein (Client): I'm not sure yet. We haven't decided whether free listings get that feature.
+Marta Klein (Client): We also need a map view showing shops near the visitor's location.
+Marta Klein (Client): We want to send an email notification to shop owners when a customer leaves a review.
+Joel (Consultant): Any reporting needs?
+Marta Klein (Client): It would be nice to have a monthly report of page views per shop, but maybe that is phase 2.
+Marta Klein (Client): We also need to import about 400 existing shops from a spreadsheet. We will provide the spreadsheet next week.
+Joel (Consultant): What does success look like for the homepage?
+Marta Klein (Client): Search results should load in under 3 seconds. Beyond that I don't know, we still need to see designs.
+Joel (Consultant): Do you have branding guidelines or a logo we should follow?
+Marta Klein (Client): We have a logo but no formal guidelines. The budget depends on what you quote, so no idea on a ceiling yet.
