@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://demo.example/kb/member-login.html</loc><lastmod>2026-03-02</lastmod></url>
+<url><loc>https://demo.example/kb/membership-plans.html</loc><lastmod>2026-03-05</lastmod></url>
+<url><loc>https://demo.example/kb/payment-gateway.html</loc><lastmod>2026-03-09</lastmod></url>
+<url><loc>https://demo.example/kb/custom-fields.html</loc><lastmod>2026-03-12</lastmod></url>
+<url><loc>https://demo.example/kb/search-results.html</loc><lastmod>2026-03-15</lastmod></url>
+<url><loc>https://demo.example/kb/email-notifications.html</loc><lastmod>2026-03-18</lastmod></url>
+<url><loc>https://demo.example/kb/seo-settings.html</loc><lastmod>2026-03-20</lastmod></url>
+<url><loc>https://demo.example/kb/import-members.html</loc><lastmod>2026-03-22</lastmod></url>
+<url><loc>https://demo.example/kb/custom-domain.html</loc><lastmod>2026-03-25</lastmod></url>
+<url><loc>https://demo.example/kb/lead-forms.html</loc><lastmod>2026-03-28</lastmod></url>
+<url><loc>https://demo.example/kb/reviews.html</loc><lastmod>2026-04-01</lastmod></url>
+<url><loc>https://demo.example/kb/map-view.html</loc><lastmod>2026-04-03</lastmod></url>
+<url><loc>https://demo.example/kb/user-roles.html</loc><lastmod>2026-04-06</lastmod></url>
+<url><loc>https://demo.example/kb/backups.html</loc><lastmod>2026-04-09</lastmod></url>
+<url><loc>https://demo.example/kb/api-access.html</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://demo.example/kb/announcement-banner.html</loc><lastmod>2026-04-14</lastmod></url>
+<url><loc>https://demo.example/tags/login</loc><lastmod>2026-04-01</lastmod></url>
+<url><loc>https://demo.example/kb/page-that-does-not-exist.html</loc><lastmod>2026-04-01</lastmod></url>
+</urlset>

@@ -1,0 +1,16 @@
+.env
+*.env
+!.env.example
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+node_modules/
+*.sqlite3
+*.db
+*.log
+dist/*.zip
+.DS_Store
+reports/*.tmp
