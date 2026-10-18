@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Tech Consultant</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#5d6773;--bd:#dde1e6;--ac:#1d5fd1;--ok:#17803d;--wa:#a15c00;--er:#b3261e}
+@media(prefers-color-scheme:dark){:root{--bg:#14171b;--card:#1d2127;--tx:#e8eaed;--mu:#9aa3ad;--bd:#323943;--ac:#6ea2ff;--ok:#5fd08a;--wa:#f0b35a;--er:#ff8b84}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+header{padding:14px 20px;background:var(--card);border-bottom:1px solid var(--bd);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+h1{font-size:18px;margin:0}nav{display:flex;gap:6px;flex-wrap:wrap;padding:10px 20px}
+nav button{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 14px;border-radius:8px;cursor:pointer}
+nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{padding:0 20px 40px;max-width:1100px;margin:auto}section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin:12px 0}
+h2{font-size:16px;margin:0 0 8px}h3{font-size:14px;margin:12px 0 4px}
+button.a,.btn{background:var(--ac);color:#fff;border:0;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:14px}
+button.s{background:transparent;color:var(--tx);border:1px solid var(--bd);padding:7px 14px;border-radius:7px;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}
+input,textarea,select{width:100%;padding:8px;border:1px solid var(--bd);border-radius:7px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{min-height:110px}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:180px}
+.pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;border:1px solid var(--bd);color:var(--mu)}
+.ok{color:var(--ok)}.wa{color:var(--wa)}.er{color:var(--er)}.mu{color:var(--mu)}.err{background:rgba(179,38,30,.12);color:var(--er);padding:8px 12px;border-radius:7px;margin:8px 0}
+.banner{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600}.demo{background:#fff1d6;color:#7a4b00}.live{background:#d9f5e3;color:#0e5a2a}.off{background:#fde0de;color:#8a1b14}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+tr.click{cursor:pointer}tr.click:hover{background:var(--bg)}pre{white-space:pre-wrap;background:var(--bg);padding:10px;border-radius:7px;border:1px solid var(--bd)}
+.empty{color:var(--mu);font-style:italic}ul{margin:4px 0;padding-left:20px}
+</style></head><body>
+<header><h1>AI Tech Consultant</h1><span id="modes"></span></header>
+<nav id="nav"></nav>
+<main>
+<section id="overview"><div class="card"><h2>Service health</h2><div id="health" class="mu">Loading…</div>
+<p class="mu">DEMO = deterministic, clearly-labelled simulated AI output (no model was called). LIVE = real Claude API calls. Nothing is ever sent to customers or clients from this dashboard.</p></div></section>
+
+<section id="kb">
+<div class="card"><h2>Knowledge Brain chat</h2><div class="row"><input id="q" placeholder="e.g. How do I enable the member login page?"><button class="a" id="askBtn">Ask</button></div><div id="ans"></div></div>
+<div class="card"><h2>Pending expert tasks</h2><div id="tasks"></div></div>
+<div class="card"><h2>Ingestion &amp; synchronisation</h2><button class="a" id="ingBtn">Ingest</button> <button class="s" id="syncBtn">Sync (detect changes)</button><div id="ing"></div></div>
+<div class="card"><h2>Articles</h2><div id="arts"></div></div></section>
+
+<section id="inbox">
+<div class="card"><h2>New customer email</h2><div class="row"><input id="en" placeholder="Customer name"><input id="ee" placeholder="Customer email"></div><br><input id="es" placeholder="Subject"><br><br><textarea id="eb" placeholder="Email body"></textarea><br><br><button class="a" id="addEmail">Add &amp; draft reply</button><div id="eerr"></div></div>
+<div class="card"><h2>Emails</h2><div id="emails"></div></div><div id="edit"></div>
+<div class="card"><h2>Feedback history</h2><div id="fb"></div></div>
+<div class="card"><h2>Automatic-send status</h2><div id="auto"></div></div></section>
+
+<section id="meet">
+<div class="card"><h2>Meeting transcript</h2><div class="row"><input id="mt" placeholder="Meeting title"><input id="mc" placeholder="Client name"></div><br>
+<textarea id="mx" placeholder="Paste transcript (Speaker (Client): text …)"></textarea><br><br><button class="a" id="mkMeet">Create &amp; analyse</button><div id="merr"></div></div>
+<div class="card"><h2>Meetings</h2><div id="meets"></div></div><div id="mview"></div></section>
+</main>
+<script>
+const H=location.hostname||'localhost',B={kb:`http://${H}:8001`,inbox:`http://${H}:8002`,sow:`http://${H}:8003`};
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function api(svc,path,method='GET',body){let r;try{r=await fetch(B[svc]+path,{method,headers:{'content-type':'application/json'},body:body?JSON.stringify(body):undefined})}catch(e){throw new Error(`Cannot reach the ${svc} service (${B[svc]}). Is it running?`)}
+ const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(typeof j.detail==='string'?j.detail:JSON.stringify(j.detail||j));return j}
+const err=(el,e)=>$(el).innerHTML=e?`<div class="err">${esc(e.message||e)}</div>`:'';
+const busy=async(btn,fn)=>{btn.disabled=true;try{await fn()}finally{btn.disabled=false}};
+const list=a=>a&&a.length?`<ul>${a.map(x=>`<li>${esc(typeof x==='string'?x:JSON.stringify(x))}</li>`).join('')}</ul>`:'<span class="empty">none</span>';
+const tabs=[['overview','Overview'],['kb','Knowledge Brain'],['inbox','Inbox Agent'],['meet','Meetings → Scope of Work']];
+$('nav').innerHTML=tabs.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
+function show(k){document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===k));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===k));({overview:loadHealth,kb:loadKB,inbox:loadInbox,meet:loadMeets})[k]()}
+$('nav').onclick=e=>e.target.dataset.t&&show(e.target.dataset.t);
+const mode=(n,h)=>h?`<span class="banner ${h.ai.mode==='live'?'live':'demo'}">${n}: ${h.ai.mode==='live'?'LIVE · '+esc(h.ai.model):'DEMO (simulated)'}</span> `:`<span class="banner off">${n}: offline</span> `;
+async function loadHealth(){const out={};for(const s of ['kb','inbox','sow'])try{out[s]=await api(s,'/health')}catch(e){out[s]=null}
+ $('modes').innerHTML=mode('Knowledge',out.kb)+mode('Inbox',out.inbox)+mode('SOW',out.sow);
+ $('health').innerHTML=[['Knowledge Brain','kb',h=>`${h.articles_active} active articles · retrieval: ${h.retrieval} · scheduler: ${h.scheduler.enabled?'ON (next '+h.scheduler.next_run+')':'OFF (use Sync button / API)'}`],
+ ['Inbox Agent','inbox',h=>`Knowledge Brain: ${h.knowledge_brain.status} · outbound: ${h.outbound_mode} · auto-send: ${h.auto_send_enabled?'enabled':'disabled'}`],
+ ['Meeting to SOW','sow',h=>`Knowledge Brain: ${h.knowledge_brain.status} · pricing: ${h.pricing}`]].map(([n,k,f])=>out[k]?`<p><b>${n}</b> <span class="ok">● up</span><br><span class="mu">${esc(f(out[k]))}</span></p>`:`<p><b>${n}</b> <span class="er">● unreachable</span> at ${B[k]}</p>`).join('')}
+// ---- Knowledge Brain
+$('askBtn').onclick=()=>busy($('askBtn'),async()=>{err('ans');const q=$('q').value.trim();if(!q)return err('ans','Type a question first.');
+ try{const r=await api('kb','/api/v1/chat','POST',{question:q,conversation_id:'dashboard'});
+ $('ans').innerHTML=`<h3>Answer <span class="pill">${esc(r.evidence_status)}</span> <span class="pill">${r.mode==='live'?'LIVE '+esc(r.model):'DEMO'}</span></h3><pre>${esc(r.answer)}</pre>
+ ${r.needs_human_review?`<p class="wa">Needs expert review — task #${r.task_id} created.</p>`:''}<h3>Sources</h3>${r.sources.length?r.sources.map(s=>`<div><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a></div>`).join(''):'<span class="empty">no sources (insufficient evidence)</span>'}`;loadTasks()}catch(e){err('ans',e)}});
+async function loadTasks(){try{const t=(await api('kb','/api/v1/tasks?status=pending')).items;$('tasks').innerHTML=t.length?t.map(x=>`<div class="card"><b>#${x.id}</b> ${esc(x.question)}<br><textarea id="ta${x.id}" placeholder="Expert answer…"></textarea><br><button class="a" data-id="${x.id}">Submit expert answer</button></div>`).join(''):'<span class="empty">No pending tasks.</span>'}catch(e){err('tasks',e)}}
+$('tasks').onclick=e=>{const id=e.target.dataset.id;if(!id)return;busy(e.target,async()=>{try{await api('kb',`/api/v1/tasks/${id}/answer`,'POST',{answer:$('ta'+id).value,expert_name:'dashboard-reviewer'});loadKB()}catch(x){err('tasks',x)}})};
+async function loadIng(){try{const s=await api('kb','/api/v1/ingest/status');$('ing').innerHTML=`<p>Articles: ${s.articles.active} active / ${s.articles.inactive} inactive. Failed pages: ${s.failed_pages.length}</p>${list(s.failed_pages.map(f=>f.url+' — '+f.error))}<h3>Recent runs</h3><table>${s.recent_runs.map(r=>`<tr><td>${esc(r.kind)}</td><td>${esc(r.started_at)}</td><td>${esc(JSON.stringify(r.report))}</td></tr>`).join('')}</table>`}catch(e){err('ing',e)}}
+for(const [id,p] of [['ingBtn','/api/v1/ingest'],['syncBtn','/api/v1/sync']])$(id).onclick=()=>busy($(id),async()=>{try{await api('kb',p,'POST',{});await loadKB()}catch(e){err('ing',e)}});
+async function loadArts(){try{const a=await api('kb','/api/v1/articles?limit=50');$('arts').innerHTML=a.items.length?`<table><tr><th>Title</th><th>Active</th><th>Source</th></tr>${a.items.map(x=>`<tr><td><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a><div class="mu">${esc(x.preview)}</div></td><td>${x.active?'yes':'no'}</td><td>${esc(x.source)}</td></tr>`).join('')}</table>`:'<span class="empty">No articles yet. Click Ingest.</span>'}catch(e){err('arts',e)}}
+function loadKB(){loadTasks();loadIng();loadArts()}
+// ---- Inbox
+async function loadInbox(){try{const l=(await api('inbox','/api/v1/emails')).items;$('emails').innerHTML=l.length?`<table><tr><th>#</th><th>From</th><th>Subject</th><th>Category</th><th>Status</th></tr>${l.map(e=>`<tr class="click" data-id="${e.id}"><td>${e.id}</td><td>${esc(e.customer_name||e.customer_email)}</td><td>${esc(e.subject)}</td><td>${esc(e.category||'—')}</td><td><span class="pill">${esc(e.status)}</span></td></tr>`).join('')}</table>`:'<span class="empty">No emails yet.</span>'}catch(e){err('emails',e)}
+ try{const h=(await api('inbox','/api/v1/feedback')).items;$('fb').innerHTML=h.length?`<table><tr><th>Email</th><th>Category</th><th>Action</th><th>Prompt</th><th>When</th></tr>${h.map(f=>`<tr><td>${f.email_id}</td><td>${esc(f.category)}</td><td>${esc(f.action)}</td><td>${esc(f.prompt_version)}</td><td>${esc(f.created_at)}</td></tr>`).join('')}</table>`:'<span class="empty">No reviews yet.</span>'}catch(e){err('fb',e)}
+ try{const a=await api('inbox','/api/v1/automation-status');$('auto').innerHTML=`<p class="mu">Auto-send is ${a.auto_send_enabled?'ENABLED':'DISABLED'}; a category needs ${a.threshold} consecutive unchanged approvals. Sending is simulated (outbound queue only).</p>`+(Object.keys(a.categories).length?`<pre>${esc(JSON.stringify(a.categories,null,1))}</pre>`:'<span class="empty">No category history yet.</span>')}catch(e){err('auto',e)}}
+$('addEmail').onclick=()=>busy($('addEmail'),async()=>{err('eerr');try{const e=await api('inbox','/api/v1/emails','POST',{customer_name:$('en').value,customer_email:$('ee').value,subject:$('es').value,body:$('eb').value});await api('inbox',`/api/v1/emails/${e.id}/draft`,'POST');await loadInbox();openEmail(e.id)}catch(x){err('eerr',x)}});
+$('emails').onclick=e=>{const tr=e.target.closest('tr.click');if(tr)openEmail(tr.dataset.id)};
+async function openEmail(id){try{const e=await api('inbox',`/api/v1/emails/${id}`);const d=e.latest_draft,done=['approved','rejected'].includes(e.status);
+ $('edit').innerHTML=`<div class="card"><h2>Email #${e.id}: ${esc(e.subject)}</h2><pre>${esc(e.body)}</pre>${d?`<p><span class="pill">${esc(d.category)}</span> <span class="pill">${esc(d.label||d.mode)}</span> <span class="pill">evidence: ${esc(d.evidence_status)}</span> ${d.needs_human_review?'<span class="pill wa">human review required</span>':''}</p>
+ <p><b>Summary:</b> ${esc(d.summary)}<br><b>Next action:</b> ${esc(d.next_action)}</p>${d.review_reasons?.length?`<div class="wa">Why review: ${esc(d.review_reasons.join('; '))}</div>`:''}
+ <h3>Evidence</h3>${d.evidence.length?d.evidence.map(x=>`<div><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a></div>`).join(''):'<span class="empty">none</span>'}
+ <h3>Draft reply (editable)</h3><textarea id="dr" ${done?'disabled':''}>${esc(d.draft_reply)}</textarea><br><br>
+ ${done?`<span class="pill">${esc(e.status)}</span>`:`<button class="a" data-a="approve">Approve (as shown / with my edits)</button> <button class="s" data-a="replace">Use my text as replacement</button> <button class="s" data-a="reject">Reject draft</button>`}<div id="rerr"></div>`:`<button class="a" data-a="draft">Generate draft</button><div id="rerr"></div>`}</div>`;
+ $('edit').onclick=ev=>{const a=ev.target.dataset.a;if(!a)return;busy(ev.target,async()=>{try{if(a==='draft')await api('inbox',`/api/v1/emails/${id}/draft`,'POST');else await api('inbox',`/api/v1/emails/${id}/${a}`,'POST',{final_text:a==='reject'?null:$('dr').value,reviewer:'dashboard-reviewer'});await loadInbox();openEmail(id)}catch(x){err('rerr',x)}})}}catch(x){err('emails',x)}}
+// ---- Meetings
+async function loadMeets(){try{const l=(await api('sow','/api/v1/meetings')).items;$('meets').innerHTML=l.length?`<table><tr><th>#</th><th>Title</th><th>Client</th><th>Versions</th><th>Approved</th></tr>${l.map(m=>`<tr class="click" data-id="${m.id}"><td>${m.id}</td><td>${esc(m.title)}</td><td>${esc(m.client_name)}</td><td>${m.latest_version||'not analysed'}</td><td>${m.approved_versions}</td></tr>`).join('')}</table>`:'<span class="empty">No meetings yet.</span>'}catch(e){err('meets',e)}}
+$('mkMeet').onclick=()=>busy($('mkMeet'),async()=>{err('merr');try{const m=await api('sow','/api/v1/meetings','POST',{title:$('mt').value,client_name:$('mc').value,transcript:$('mx').value});await api('sow',`/api/v1/meetings/${m.id}/analyze`,'POST');await loadMeets();openMeet(m.id)}catch(x){err('merr',x)}});
+$('meets').onclick=e=>{const tr=e.target.closest('tr.click');if(tr)openMeet(tr.dataset.id)};
+async function openMeet(id,ver){try{const q=ver?`?version=${ver}`:'';const [m,s,e,p]=await Promise.all([api('sow',`/api/v1/meetings/${id}`),api('sow',`/api/v1/meetings/${id}/scope${q}`),api('sow',`/api/v1/meetings/${id}/estimate${q}`),api('sow',`/api/v1/meetings/${id}/proposal${q}`)]);
+ let cmp='';if(s.version>1){try{const c=(await api('sow',`/api/v1/meetings/${id}/comparison?version=${s.version}`)).comparison;cmp=`<div class="card"><h2>Changes: v${c.from_version} → v${c.to_version}</h2><h3>Added</h3>${list(c.added)}<h3>Modified</h3>${list(c.modified.map(x=>x.id+': '+x.before+' → '+x.after))}<h3>Removed</h3>${list(c.removed)}<h3>Out-of-scope changes</h3>${list(c.out_of_scope_changes)}<h3>Unchanged</h3>${list(c.unchanged)}<p><b>Hours:</b> ${c.previous_total_hours} → ${c.new_total_hours} (${c.additional_hours>=0?'+':''}${c.additional_hours})</p><h3>Requires client approval</h3>${list(c.requires_client_approval)}</div>`}catch{}}
+ const sc=s.scope,pr=p.proposal;
+ $('mview').innerHTML=`<div class="card"><h2>Meeting #${id}: ${esc(m.title)} — ${esc(m.client_name)}</h2><p>Versions: ${m.versions.map(v=>`<button class="s" data-v="${v.version}">v${v.version}${v.approved_by?' ✓':''}</button>`).join(' ')} <span class="pill">viewing v${s.version}</span> <span class="pill">${s.meta.mode==='live'?'LIVE '+esc(s.meta.model):'DEMO (heuristics, no model)'}</span> ${p.approved?'<span class="pill ok">approved internally — NOT sent to client</span>':''}</p>
+ ${s.validation.issues.length?`<div class="wa">Validation: ${esc(s.validation.issues.map(i=>i.severity+': '+i.message).join(' | '))}</div>`:'<span class="ok">Validation passed</span>'}
+ <p><b>Follow-up meeting:</b></p><textarea id="fu" placeholder="Paste the follow-up transcript…"></textarea><br><br><button class="a" id="fuBtn">Analyse follow-up → new version</button> <button class="s" id="apBtn" ${p.approved?'disabled':''}>Approve v${s.version} (internal only)</button><div id="verr"></div></div>${cmp}
+ <div class="card"><h2>Scope of Work</h2><p><b>Objective:</b> ${esc(sc.objective)}</p><h3>In scope</h3>${list(sc.in_scope)}<h3>Out of scope</h3>${list(sc.out_of_scope)}<h3>Assumptions</h3>${list(sc.assumptions)}<h3>Dependencies</h3>${list(sc.dependencies)}<h3>Acceptance criteria</h3>${list(sc.acceptance_criteria)}<h3>Open questions</h3>${list(sc.open_questions)}
+ <h3>Existing-feature check (Knowledge Brain)</h3>${s.product_findings.map(f=>`<div><span class="pill">${esc(f.evidence_status)}</span> <b>${esc(f.requirement_id)}</b> ${esc(f.statement)}</div>`).join('')||'<span class="empty">none</span>'}</div>
+ <div class="card"><h2>Developer estimate — ${e.estimate.total_hours} h <span class="pill">${esc(e.estimate.basis)}</span></h2><table><tr><th>Task</th><th>Hours</th><th>Risk</th><th>Reasoning</th></tr>${e.estimate.tasks.map(t=>`<tr><td><b>${esc(t.name)}</b><div class="mu">${esc(t.description)}</div></td><td>${t.hours}</td><td>${esc(t.risk)}</td><td>${esc(t.reasoning)}</td></tr>`).join('')}</table><h3>Assumptions</h3>${list(e.estimate.assumptions)}</div>
+ <div class="card"><h2>Client proposal (draft)</h2><h3>Executive summary</h3><p>${esc(pr.executive_summary)}</p><h3>Requirements</h3>${list(pr.client_requirements)}<h3>Proposed solution</h3><p>${esc(pr.proposed_solution)}</p><h3>Deliverables</h3>${list(pr.deliverables)}<h3>Timeline</h3><pre>${esc(JSON.stringify(pr.timeline,null,1))}</pre><h3>Commercial</h3><p>${esc(pr.commercial.label)}</p><h3>Exclusions</h3>${list(pr.exclusions)}<h3>Risks and assumptions</h3>${list(pr.risks_and_assumptions)}<h3>Approval</h3><pre>${esc(JSON.stringify(pr.approval,null,1))}</pre></div>`;
+ $('mview').onclick=ev=>{if(ev.target.dataset.v)return openMeet(id,ev.target.dataset.v);
+  if(ev.target.id==='fuBtn')busy(ev.target,async()=>{try{await api('sow',`/api/v1/meetings/${id}/follow-up`,'POST',{transcript:$('fu').value});loadMeets();openMeet(id)}catch(x){err('verr',x)}});
+  if(ev.target.id==='apBtn')busy(ev.target,async()=>{try{await api('sow',`/api/v1/meetings/${id}/approve`,'POST',{approver:'dashboard-reviewer',version:s.version});loadMeets();openMeet(id,s.version)}catch(x){err('verr',x)}})};
+}catch(x){err('merr',x)}}
+loadHealth().then(()=>show('overview'));
+</script></body></html>

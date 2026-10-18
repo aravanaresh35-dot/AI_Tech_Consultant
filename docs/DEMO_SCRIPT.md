@@ -1,0 +1,6 @@
+# Demo video script (~4 min)
+1. **Start (20 s):** `./run.sh --install`; open :8080. Point at the header banners: "DEMO (simulated)" – no real model is called.
+2. **Knowledge Brain (60 s):** ask "How do I enable the member login page?" → answer with source link. Ask "What is the warranty on drones?" → honest "can't find", task created. In *Pending expert tasks* submit an answer; ask again → now answered. Click *Sync* and mention the daily scheduler is off unless `SYNC_SCHEDULE_ENABLED=true`.
+3. **Inbox Agent (70 s):** add an email asking about the login page → draft with evidence and category. Edit one sentence, *Approve*; show Feedback history (`approved_edited`). Add a refund email → "human review required". Show automatic-send status: 20 unchanged approvals needed; refunds never; outbound is simulated.
+4. **Meeting to SOW (70 s):** paste `01_website_improvement.txt`, *Create & analyse*. Show scope, open questions, existing-feature check (map view → "may be covered … to be confirmed"), estimate with reasoning, proposal with no invented price. Paste `03_follow_up_changes.txt` as follow-up → comparison (added/removed/modified/out of scope, +hours). Approve → "NOT sent to client".
+5. **Honest close (20 s):** 111 offline tests pass; live Claude, Docker and model comparison are not yet verified (see EVALS.md).

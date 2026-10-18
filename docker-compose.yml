@@ -1,0 +1,34 @@
+# docker compose up --build   (NOTE: not verified in the authoring environment - Docker was unavailable)
+x-ai-env: &ai-env
+  DEMO_MODE: ${DEMO_MODE:-auto}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}
+services:
+  knowledge-brain:
+    build: {context: ., dockerfile: task1-knowledge-brain/Dockerfile}
+    environment: {<<: *ai-env, KB_DB_PATH: /data/kb.sqlite3, CRAWL_SOURCE: "${CRAWL_SOURCE:-demo}"}
+    volumes: [kb-data:/data]
+    ports: ["8001:8001"]
+  kb-init:   # one-shot: loads the knowledge base once the Knowledge Brain is healthy
+    build: {context: ., dockerfile: task1-knowledge-brain/Dockerfile}
+    depends_on: {knowledge-brain: {condition: service_healthy}}
+    restart: "no"
+    command: ["python", "-c", "import urllib.request as u; r=u.Request('http://knowledge-brain:8001/api/v1/ingest', data=b'{}', headers={'content-type':'application/json'}, method='POST'); print(u.urlopen(r, timeout=300).read()[:300])"]
+  inbox-agent:
+    build: {context: ., dockerfile: task2-inbox-agent/Dockerfile}
+    environment: {<<: *ai-env, INBOX_DB_PATH: /data/inbox.sqlite3, KNOWLEDGE_BRAIN_URL: "http://knowledge-brain:8001"}
+    volumes: [inbox-data:/data]
+    depends_on: {knowledge-brain: {condition: service_healthy}}
+    ports: ["8002:8002"]
+  meeting-to-sow:
+    build: {context: ., dockerfile: task3-meeting-to-sow/Dockerfile}
+    environment: {<<: *ai-env, SOW_DB_PATH: /data/sow.sqlite3, KNOWLEDGE_BRAIN_URL: "http://knowledge-brain:8001", HOURLY_RATE: "${HOURLY_RATE:-}", CURRENCY: "${CURRENCY:-USD}"}
+    volumes: [sow-data:/data]
+    depends_on: {knowledge-brain: {condition: service_healthy}}
+    ports: ["8003:8003"]
+  frontend:
+    image: nginx:1.27-alpine
+    volumes: ["./frontend/src:/usr/share/nginx/html:ro"]
+    ports: ["8080:80"]
+    depends_on: [inbox-agent, meeting-to-sow]
+volumes: {kb-data: {}, inbox-data: {}, sow-data: {}}

@@ -1,0 +1,47 @@
+{
+  "mode": "DEMO (deterministic, no model calls)",
+  "tasks": {
+    "task1-knowledge-brain": {
+      "passed": 36,
+      "failed": 0,
+      "errors": 0,
+      "pass_rate": 1.0,
+      "seconds": 2.8
+    },
+    "task2-inbox-agent": {
+      "passed": 36,
+      "failed": 0,
+      "errors": 0,
+      "pass_rate": 1.0,
+      "seconds": 3.09
+    },
+    "task3-meeting-to-sow": {
+      "passed": 39,
+      "failed": 0,
+      "errors": 0,
+      "pass_rate": 1.0,
+      "seconds": 2.83
+    }
+  },
+  "measured_at_utc": "2026-10-18T16:18:18Z",
+  "classification": {
+    "classifier": "rule-based keyword (demo path)",
+    "n": 56,
+    "correct": 55,
+    "accuracy": 0.982,
+    "misclassified": [
+      {
+        "id": "E056",
+        "expected": "technical_issue",
+        "got": "product_how_to"
+      }
+    ],
+    "note": "Labels were written by the project author with the dataset; not an independent benchmark."
+  },
+  "unavailable": {
+    "claude_draft_quality": "needs ANTHROPIC_API_KEY + ANTHROPIC_MODEL",
+    "token_usage": "no live calls made",
+    "estimated_cost": "no live calls made",
+    "model_comparison": "pending - run scripts/benchmark_models.py with two models"
+  }
+}
